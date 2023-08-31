@@ -6,14 +6,18 @@ using Azure.ResourceManager;
 using Azure.ResourceManager.ServiceBus;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.ServiceBus.Models;
+using Microsoft.IdentityModel.Abstractions;
+using Microsoft.Extensions.Logging;
 
 public class AzureClient : HttpClient
 {
     private readonly Options options;
+    private readonly ILogger<AzureClient> logger;
     
-    public AzureClient(Options options)
+    public AzureClient(Options options, ILoggerFactory loggerFactory)
     {
         this.options = options;
+        this.logger = loggerFactory.CreateLogger<AzureClient>();
     }
     
     public async Task CloneNamespaceAsync()

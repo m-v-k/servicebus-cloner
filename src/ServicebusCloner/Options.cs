@@ -1,4 +1,5 @@
 using CommandLine;
+using Microsoft.Extensions.Logging;
 
 public class Options
 {
@@ -14,10 +15,10 @@ public class Options
     [Option("clientsecret", Required = true, HelpText = "The clientsecret. [SC_CLIENTSECRET]")]
     public string ClientSecret { get; set; }
 
-    [Option("sbFrom", Required = true, HelpText = "Service Bus Name from which to clone. [SC_FROM]")]
+    [Option("from", Required = true, HelpText = "Service Bus Name from which to clone. [SC_FROM]")]
     public string ServiceBusFrom { get; set; }
     
-    [Option("sbTo", Required = true, HelpText = "Service Bus Name for the temporary created one. [SC_TO]")]
+    [Option("to", Required = true, HelpText = "Service Bus Name for the temporary created one. [SC_TO]")]
     public string ServiceBusTo { get; set; }
 
     [Option("region", Required = false, HelpText = "The azure region for the new namespace. [SC_REGION]", Default = "westeurope")]
@@ -29,17 +30,17 @@ public class Options
     [Option("sku", Required = false, HelpText = "The namespace sku. [SC_SKU]", Default = "Standard")]
     public string Sku { get; set; }
 
-    [Option("create", SetName = "create", Required = false, HelpText = "Create a service bus and clone from an existing one. The create and delete options are mutually exclusive. [SC_CREATE]", Default = true)]
-    public bool Create { get; set; }
-    
-    [Option("delete", SetName = "delete", Required = false, HelpText = "Delete a service bus. The create and delete options are mutually exclusive. [SC_DELETE]")]
-    public bool Delete { get; set; }
+    [Option('a', "action", Required = false, HelpText = "'create', 'delete' or 'ephemeral'. Ephemeral does a create then keeps the app running and does a delete on SIGTERM. [SC_ACTION]", Default = Action.ephemeral)]
+    public Action Action { get; set; }
     
     [Option('o',"out", Required = false, HelpText = "File path where the temporary servicebus connectionstring is saved to. [SC_OUT]", Default = "/app/out/connectionstring")]
     public string OutFile { get; set; }
     
-    [Option("ephemeral", SetName = "ephemeral", Required = false, HelpText = "Keep service bus running while container is running. Deletes the resources when container stops. [SC_EPHEMERAL]")]
-    public bool Ephemeral { get; set; }
+    [Option('l',"loglevel", Required = false, HelpText = "Log level: 'Critical', 'Debug', 'Error', 'Information', 'None', 'Trace', 'Warning'. [SC_LOGLEVEL]", Default = LogLevel.Information)]
+    public LogLevel LogLevel { get; set; }
     
     // Add other properties as needed...
 }
+
+
+
