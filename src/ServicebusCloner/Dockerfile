@@ -15,3 +15,5 @@ FROM mcr.microsoft.com/dotnet/runtime-deps:6.0-alpine
 WORKDIR /app
 COPY --from=build-env /app/out .
 ENTRYPOINT ["./ServicebusCloner"]
+
+HEALTHCHECK --interval=5s --timeout=3s CMD test -f /health/ready || exit 1

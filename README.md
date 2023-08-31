@@ -15,6 +15,8 @@ PR's and issues are welcome.
 
 ## Example
 
+
+
 1. Create a clone.
 
     ```bash
@@ -44,3 +46,22 @@ PR's and issues are welcome.
         --sbTo=MyTemporaryServiceBusNameForTesting \
         --delete
     ```
+
+### Ephemeral
+
+For some use cases, like docker-compose,it can be benificial to use the ephemeral flag.
+The test service will exist while the container runs. It is deleted on container SIGTERM.
+Use a volume to fetch the created connectionstring from the container.
+
+```bash
+docker run -v "mypath:/app/out" 
+    --rm servicebus-cloner:latest \
+    --out=/app/out/connectionstring \
+    --tenant=a2c511af-be9b-4d4f-a265-d2a3fcf3dc98 \
+    --subscription=89d5e09c-47ac-4008-8b09-3f6e67c682eb \
+    --clientid=5bc23718-68c1-472c-9a82-6c73f48d049d \
+    --clientsecret=MySuperSecret \
+    --sbFrom=MyRealServiceBusName \
+    --sbTo=MyTemporaryServiceBusForTesting \
+    --ephemeral
+```

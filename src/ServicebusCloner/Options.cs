@@ -29,11 +29,17 @@ public class Options
     [Option("sku", Required = false, HelpText = "The namespace sku.", Default = "Standard")]
     public string Sku { get; set; }
 
-    [Option("create", Required = false, HelpText = "Create a service bus and clone from an existing one. The create and delete options are mutually exclusive.", Default = true)]
+    [Option("create", SetName = "create", Required = false, HelpText = "Create a service bus and clone from an existing one. The create and delete options are mutually exclusive.", Default = true)]
     public bool Create { get; set; }
     
-    [Option("delete", Required = false, HelpText = "Delete a service bus. The create and delete options are mutually exclusive.")]
+    [Option("delete", SetName = "delete", Required = false, HelpText = "Delete a service bus. The create and delete options are mutually exclusive.")]
     public bool Delete { get; set; }
+    
+    [Option('o',"out", Required = false, HelpText = "File path where the temporary servicebus connectionstring is saved to.", Default = "/app/out/connectionstring")]
+    public string OutFile { get; set; }
+    
+    [Option("ephemeral", SetName = "ephemeral", Required = false, HelpText = "Keep service bus running while container is running. Deletes the resources when container stops.")]
+    public bool Ephemeral { get; set; }
     
     // Add other properties as needed...
 }
