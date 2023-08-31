@@ -112,6 +112,18 @@ public class Program
             // repalced this 'Assembly.GetExecutingAssembly().GetName().Name.ToUpperInvariant()' with a static prefix of 'SC_'
             // ignore verbs since this solution has only 1
             var value = Environment.GetEnvironmentVariable($"SC_{unusedOption.LongName.ToUpperInvariant()}");
+            
+            // try reading a docker secret, ignore errors
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                Console.WriteLine($"Trying to read docker secret for {unusedOption.LongName} at /run/secrets/SC_{unusedOption.LongName.ToUpperInvariant()}");
+                try
+                {
+                    value = File.ReadAllText($"/run/secrets/SC_{unusedOption.LongName.ToUpperInvariant()}");
+                }
+                catch{}
+            }
+
             if (value != null)
             {
                 newArgs.Add($"--{unusedOption.LongName}={value}");
