@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-
+﻿using System.Reflection;
 using CommandLine;
 
 namespace ServiceBusCloner.Service;
@@ -11,6 +9,8 @@ public class Program
 
     static void Main(string[] args)
     {
+        args = AppendEnvironmentVariables(args);
+
         var isEphemeral = args.Contains("--ephemeral");
         if (isEphemeral)
         {
@@ -35,7 +35,7 @@ public class Program
             };
         }
 
-        Parser.Default.ParseArguments<Options>(args)
+        var result = Parser.Default.ParseArguments<Options>(args)
             .WithParsed<Options>(options => {
                 if (options.Ephemeral)
                 {
@@ -67,7 +67,7 @@ public class Program
                 }
             })
             .WithNotParsed(errors => 
-            {
+            { 
                 foreach(var error in errors)
                 {
                     Console.WriteLine(error);
@@ -100,5 +100,60 @@ public class Program
         Console.WriteLine($"Writing to file '{filePath}'");
         File.WriteAllText(filePath, content);
         Console.WriteLine($"Written to file '{filePath}'");
+    }
+
+    private static string[] AppendEnvironmentVariables(string[] args)
+    {
+        var options = GetOptions();
+
+        var newArgs = new List<string>(args);
+        foreach (var unusedOption in FilterOptions(args, options))
+        {
+            // repalced this 'Assembly.GetExecutingAssembly().GetName().Name.ToUpperInvariant()' with a static prefix of 'SC_'
+            // ignore verbs since this solution has only 1
+            var value = Environment.GetEnvironmentVariable($"SC_{unusedOption.LongName.ToUpperInvariant()}");
+            if (value != null)
+            {
+                newArgs.Add($"--{unusedOption.LongName}={value}");
+            }
+        }
+        return newArgs.ToArray();
+    }
+
+    private static OptionAttribute[] GetOptions()
+    {
+        return typeof(Options).GetProperties()
+            .Select(property => property.GetCustomAttributes<OptionAttribute>().FirstOrDefault())
+            .Where(option => option != null).ToArray();
+    }
+
+    private static OptionAttribute[] FilterOptions(string[] args, OptionAttribute[] options)
+    {
+        var usedLongNames = new HashSet<string>();
+        var usedShortNames = new HashSet<string>();
+
+        foreach (var arg in args)
+        {
+            if (arg.StartsWith("--"))
+            {
+                var longName = arg.Substring(2);
+                if (longName.Contains('='))
+                {
+                    longName = longName.Substring(0, longName.IndexOf('='));
+                }
+                usedLongNames.Add(longName);
+            }
+            else if (arg.StartsWith("-"))
+            {
+                var shortName = arg.Substring(1);
+                if (shortName.Contains('='))
+                {
+                    shortName = shortName.Substring(0, shortName.IndexOf('='));
+                }
+                usedShortNames.Add(shortName);
+            }
+        }
+
+        return options.Where(option => !usedLongNames.Contains(option.LongName) && !usedShortNames.Contains(option.ShortName)).ToArray();
     }
 }
