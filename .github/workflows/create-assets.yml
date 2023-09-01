@@ -2,8 +2,6 @@ name: Create Assets
 
 on:
   push:
-    branches:
-      - main
     tags:
       - 'v*.*.*'
 
@@ -50,6 +48,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     
+    - name: Checkout code
+      uses: actions/checkout@v3
+
     - name: Create Release
       uses: gh-actions/create-release@v1
       with:
