@@ -28,6 +28,8 @@ jobs:
 
       - name: DotNet Publish
         run: |
+          echo '${{ substring(github.ref, 1) }}'
+          echo '${{ substring(github.ref, 11) }}'
           cd src/ServicebusCloner
           dotnet publish -c Release -o ./artifacts \
             --runtime ${{ matrix.distribution }} \
@@ -35,17 +37,20 @@ jobs:
             -p:PublishTrimmed=true \
             -p:TrimMode=Link \
             -p:PublishSingleFile=true \
+            -p:AssemblyVersion=${{ substring(github.ref, 1) }} \
+            -p:Version=${{ substring(github.ref, 1) }}
       
       - name: Zip
         run: |
-          mkdir ./artifacts-zip
-          zip -r ./artifacts-zip/servicebuscloner-${{ matrix.distribution }}.zip ./src/ServicebusCloner/artifacts
+          cd ./src/ServicebusCloner/artifacts
+          mkdir ./zip
+          zip -r ./zip/servicebuscloner-${{ matrix.distribution }}.zip .
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: dotnet-publish-${{ matrix.distribution }}
-          path: ./artifacts-zip/
+          path: ./src/ServicebusCloner/artifacts/zip/
   
   release:
     needs: publish
