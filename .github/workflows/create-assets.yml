@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        distribution: [ 'win-x64'] # , 'linux-x64', 'osx-x64', 'win-arm64', 'win-x86',  'linux-arm64', 'osx-arm64' ] save me some billing ;) 
+        distribution: [ 'win-x64', 'linux-x64', 'osx-x64' ] # , 'win-arm64', 'win-x86',  'linux-arm64', 'osx-arm64' ] save me some billing ;) 
     steps:
 
       - name: Check out the repo
@@ -45,15 +45,15 @@ jobs:
       
       - name: Zip
         run: |
+          mkdir ./src/ServicebusCloner/zip
           cd ./src/ServicebusCloner/artifacts
-          mkdir ./zip
-          zip -r ./zip/servicebuscloner-${{ matrix.distribution }}.zip .
+          zip -r ./src/ServicebusCloner/zip/servicebuscloner-${{ matrix.distribution }}.zip .
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: dotnet-publish-${{ matrix.distribution }}
-          path: ./src/ServicebusCloner/artifacts/zip/
+          path: ./src/ServicebusCloner/zip/
   
   release:
     needs: publish
@@ -82,7 +82,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        distribution: [ 'win-x64'] # , 'linux-x64', 'osx-x64', 'win-arm64', 'win-x86',  'linux-arm64', 'osx-arm64' ] save me some billing ;) 
+        distribution: [ 'win-x64', 'linux-x64', 'osx-x64' ] # , 'win-arm64', 'win-x86',  'linux-arm64', 'osx-arm64' ] save me some billing ;) 
     steps:
 
     - name: Download artifact
