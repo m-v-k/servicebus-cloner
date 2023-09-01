@@ -26,6 +26,7 @@ jobs:
 
       - name: DotNet Publish
         run: |
+          cd src/ServicebusCloner
           dotnet publish -c Release -o ./artifacts \
             --runtime ${{ matrix.distribution }} \
             --self-contained true \
