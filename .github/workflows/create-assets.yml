@@ -47,7 +47,7 @@ jobs:
         run: |
           mkdir ./src/ServicebusCloner/zip
           cd ./src/ServicebusCloner/artifacts
-          zip -r ./src/ServicebusCloner/zip/servicebuscloner-${{ matrix.distribution }}.zip .
+          zip -r ../zip/servicebuscloner-${{ matrix.distribution }}.zip .
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
