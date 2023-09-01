@@ -18,6 +18,10 @@ public class Program
 
         args = Utilities.AppendEnvironmentVariables(args, logger);
         var result = Parser.Default.ParseArguments<Options>(args);
+        if(result.Errors.Count() > 0)
+        {
+            return;
+        }
         var options = result.Value;
 
         var isCreate = options.Action == Action.create;
@@ -65,12 +69,6 @@ public class Program
         }
         logger.LogDebug("Finish Cloning.");
         
-        foreach(var error in result.Errors)
-        {
-            Console.WriteLine(error);
-        }
-        // TODO: Handle parsing errors if needed.
-    
         if (isEphemeral)
         {
             while (!cts.Token.IsCancellationRequested)
