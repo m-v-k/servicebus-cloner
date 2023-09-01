@@ -26,10 +26,13 @@ jobs:
         with:
           dotnet-version: '6.0.x'
 
+      - name: Get the tag without the 'v' prefix
+        id: format_tag
+        run: echo "::set-output name=tag::${GITHUB_REF:11}"
+
       - name: DotNet Publish
         run: |
-          echo '${{ substring(github.ref, 1) }}'
-          echo '${{ substring(github.ref, 11) }}'
+          echo ${{ steps.format_tag.outputs.tag }}
           cd src/ServicebusCloner
           dotnet publish -c Release -o ./artifacts \
             --runtime ${{ matrix.distribution }} \
@@ -37,8 +40,8 @@ jobs:
             -p:PublishTrimmed=true \
             -p:TrimMode=Link \
             -p:PublishSingleFile=true \
-            -p:AssemblyVersion=${{ substring(github.ref, 1) }} \
-            -p:Version=${{ substring(github.ref, 1) }}
+            -p:AssemblyVersion=${{ steps.format_tag.outputs.tag }} \
+            -p:Version=${{ steps.format_tag.outputs.tag }}
       
       - name: Zip
         run: |
