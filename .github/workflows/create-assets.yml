@@ -36,6 +36,7 @@ jobs:
       
       - name: Zip
         run: |
+          mkdir ./artifacts-zip
           zip -r ./artifacts-zip/servicebuscloner-${{ matrix.distribution }}.zip ./src/ServicebusCloner/artifacts
 
       - name: Upload artifacts
