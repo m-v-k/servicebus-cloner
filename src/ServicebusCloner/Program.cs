@@ -18,7 +18,7 @@ public class Program
 
         args = Utilities.AppendEnvironmentVariables(args, logger);
         var result = Parser.Default.ParseArguments<Options>(args);
-        if(result.Errors.Count() > 0)
+        if (result.Errors.Count() > 0)
         {
             return;
         }
@@ -26,25 +26,28 @@ public class Program
 
         var isCreate = options.Action == Action.create;
         var isEphemeral = options.Action == Action.ephemeral;
-        
+
         if (isEphemeral)
         {
-            Console.CancelKeyPress += (sender, e) => {
+            Console.CancelKeyPress += (sender, e) =>
+            {
                 e.Cancel = true;  // Prevent the immediate exit.
                 cts.Cancel();
             };
-            
+
             // Handle SIGTERM for graceful shutdown in containers
-            AppDomain.CurrentDomain.ProcessExit += (sender, e) => {
+            AppDomain.CurrentDomain.ProcessExit += (sender, e) =>
+            {
                 logger.LogDebug("Start delete.");
                 Parser.Default.ParseArguments<Options>(args)
-                    .WithParsed<Options>(options => {
+                    .WithParsed<Options>(options =>
+                    {
                         using (var client = new AzureClient(options, loggerFactory))
                         {
                             var result = client.DeleteNamespaceAsync().GetAwaiter().GetResult();
                             Console.WriteLine(result);
                         }
-                });
+                    });
                 logger.LogDebug("Finish delete.");
                 cts.Cancel();
             };
@@ -57,9 +60,9 @@ public class Program
             {
                 var connectionstring = client.CreateNamespaceAsync().GetAwaiter().GetResult();
                 client.CloneNamespaceAsync().GetAwaiter().GetResult();
-                
+
                 Utilities.SaveStringToFile(connectionstring, options.OutFile, logger);
-                Utilities.SaveStringToFile(string.Empty, "/health/ready", logger);
+                Utilities.SaveStringToFile(string.Empty, "/health/ready", logger); // if in a container, signals that the container is healthy (ready with startup)
             }
             else
             {
@@ -68,7 +71,7 @@ public class Program
             }
         }
         logger.LogDebug("Finish Cloning.");
-        
+
         if (isEphemeral)
         {
             while (!cts.Token.IsCancellationRequested)

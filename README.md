@@ -15,8 +15,6 @@ PR's and issues are welcome.
 
 ## Example
 
-
-
 1. Create a clone.
 
     ```bash
@@ -44,7 +42,7 @@ PR's and issues are welcome.
         --clientid=5bc23718-68c1-472c-9a82-6c73f48d049d \
         --clientsecret=MySuperSecret \
         --sbTo=MyTemporaryServiceBusNameForTesting \
-        --delete
+        --action=delete
     ```
 
 ### Ephemeral
@@ -63,5 +61,5 @@ docker run -v "mypath:/app/out"
     --clientsecret=MySuperSecret \
     --sbFrom=MyRealServiceBusName \
     --sbTo=MyTemporaryServiceBusForTesting \
-    --ephemeral
+    --action=ephemeral
 ```
